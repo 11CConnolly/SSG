@@ -15,19 +15,25 @@ public class TestBuilder {
     }
 
     void buildTest(ClassReport classReport) throws IOException {
-        TypeSpec junitTestSpec = TypeSpec.classBuilder(classReport.getClassName() + "AUTOGEN_Test")
+
+        String testClassName = classReport.getClassName() + "AUTOGEN_Test";
+
+        // Construct file to build
+        TypeSpec junitTestSpec = TypeSpec.classBuilder(testClassName)
                 .addModifiers(Modifier.PUBLIC)
                 .build();
-
 
         // Setup java file to write out to
         JavaFile javaTestFile = JavaFile
                 .builder(classReport.getPackageName(), junitTestSpec)
-                .indent("    ")
+                .indent("    ") // Default indentation is 2 spaces so we set this to 4 spaces instead
                 .build();
 
+        // Write the java file out and print info
         String FILE_PATH_OUT = classReport.getPackageName();
 
         javaTestFile.writeTo(new File(FILE_PATH_OUT));
+
+        System.out.println("[SUCCESS] Java file: " + testClassName + " written out to: " + FILE_PATH_OUT);
     }
 }

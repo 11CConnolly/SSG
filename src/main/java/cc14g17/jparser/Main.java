@@ -39,6 +39,7 @@ public class Main {
         }
         catch (IOException e)
         {
+            System.out.println("[INFO] Error when analyzing java file - does the file compile?");
             e.printStackTrace();
         }
 
@@ -51,6 +52,7 @@ public class Main {
         }
         catch (IOException e)
         {
+            System.out.println("[INFO] Error when building test file");
             e.printStackTrace();
         }
 
