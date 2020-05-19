@@ -1,4 +1,4 @@
-# __S__ecurity __S__uite __G__enerator
+# Security Suite Generator
 
 Generator for use with SECdefects
 
