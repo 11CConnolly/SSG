@@ -2,8 +2,8 @@ package cc14g17.jparser;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,7 +38,7 @@ public class ListParser {
                 String[] vals = line.split(",");
                 payloads.add(Arrays.asList(vals));
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -60,7 +60,7 @@ public class ListParser {
                 String[] vals = line.split(",");
                 payloads.add(Arrays.asList(vals));
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -84,11 +84,11 @@ public class ListParser {
                 String[] vals = line.split(",");
                 payloads.add(Arrays.asList(vals));
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
-        // Flatten payload to List and return
+        // Flatten payload to List after parsing the Integer value and returning
         List<Integer> list = new ArrayList<>();
         for (List<String> payload : payloads) {
             for (String s : payload) {
