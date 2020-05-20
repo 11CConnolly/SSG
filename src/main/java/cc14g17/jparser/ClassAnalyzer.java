@@ -55,7 +55,7 @@ public class ClassAnalyzer {
         return classReport;
     }
 
-    private class PackageNameGetter extends GenericVisitorAdapter<String, Void> {
+    private static class PackageNameGetter extends GenericVisitorAdapter<String, Void> {
 
         @Override
         public String visit(PackageDeclaration pd, Void arg) {
@@ -64,7 +64,7 @@ public class ClassAnalyzer {
         }
     }
 
-    private class ClassNameGetter extends GenericVisitorAdapter<String, Void> {
+    private static class ClassNameGetter extends GenericVisitorAdapter<String, Void> {
 
         @Override
         public String visit(ClassOrInterfaceDeclaration cd, Void arg) {
@@ -73,7 +73,7 @@ public class ClassAnalyzer {
         }
     }
 
-    private class MethodNameCollector extends VoidVisitorAdapter<List<String>> {
+    private static class MethodNameCollector extends VoidVisitorAdapter<List<String>> {
 
         @Override
         public void visit(MethodDeclaration md, List<String> collector) {
