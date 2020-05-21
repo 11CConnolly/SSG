@@ -19,7 +19,7 @@ public class TestBuilder {
     private List<String> methodNames;
     private String instanceName;
     private String testclassName;
-    private String oracleFlag;
+    private String oracleFlag = "";
 
     // Regex pattern to match methods with bad... or good...
     private Pattern methodPatten = Pattern.compile("^bad[a-zA-Z0-9_]+|^good[a-zA-Z0-9)]+");
@@ -50,8 +50,8 @@ public class TestBuilder {
         this.methodNames = relevantMethodNames;
     }
 
-    void buildTest() throws IOException {
-        // Build setUp method to help with initialization
+    void buildTest(DefectType defectType) throws IOException {
+        /* Build setUp method to reset program after each test has run */
         MethodSpec setUp = MethodSpec.methodBuilder("setUp")
                 .addAnnotation(Before.class)
                 .addModifiers(Modifier.PUBLIC)
@@ -60,13 +60,86 @@ public class TestBuilder {
                         className)
                 .build();
 
-        ListParser listParser = new ListParser();
 
-        // Build methods to test exploitation of defects
-        List<MethodSpec> generatedTests = new ArrayList<>();
+        // Get chosen payload and build tests with test data
+        ListParser listParser = new ListParser();
+        List<MethodSpec> generatedTests;
+
+        switch (defectType) {
+            case STRING_SQL_INJECTION:
+                generatedTests = generateSQLTests(listParser.getSQLPayloads());
+                break;
+            case STRING_PATH_TRAVERSAL:
+                generatedTests = generatePathTraversalTests(listParser.getPathTraversalPayloads());
+                break;
+            case INTEGER_ATTACK:
+                generatedTests = generateIntegerTests(listParser.getIntegerPayloads());
+                break;
+            default:
+                System.out.println("Improper defect Type");
+                throw new IllegalArgumentException();
+        }
+
+        // Check our list of generated tests and then print them out
+        if (generatedTests == null) {
+            System.out.println("No generated tests provided");
+            return;
+        }
+        generatedTests.forEach(System.out::println);
+
+
+        /* Build test suite class and add our relevant methods */
+        TypeSpec.Builder testCaseBuilder = TypeSpec.classBuilder(testclassName)
+                .addModifiers(Modifier.PUBLIC)
+                .addInitializerBlock(CodeBlock.builder()
+                        .addStatement("private $L $L", className, instanceName)
+                        .build())
+                .addMethod(setUp);
+                for (MethodSpec m : generatedTests) {
+                    testCaseBuilder.addMethod(m);
+                }
+        // Setup java file to write out to
+        JavaFile javaTestFile = JavaFile
+                .builder(packageName, testCaseBuilder.build())
+                .indent("    ") // Default indentation is 2 spaces so we set this to 4 spaces instead
+                .build();
+
+
+        // Write the java file out and print info
+        String FILE_PATH_OUT = packageName;
+        javaTestFile.writeTo(new File(FILE_PATH_OUT));
+        System.out.println("[SUCCESS] Java file: " + testclassName + " written out to: " + FILE_PATH_OUT);
+    }
+
+    private List<MethodSpec> generateSQLTests (List<String> payloads) {
+        List<MethodSpec> genTests = new ArrayList<>();
         for (String method : methodNames) {
             int count = 1;
-            for (String payload : listParser.getPathTraversalPayloads()) {
+            for (String payload : payloads) {
+                MethodSpec testCase = MethodSpec.methodBuilder(method + count)
+                        .addAnnotation(Test.class)
+                        .addModifiers(Modifier.PUBLIC)
+                        .addStatement("$L.$L($S)",
+                                instanceName,
+                                method,
+                                payload)
+                        .addStatement("$T.assertFalse($L.$L())",
+                                Assert.class,
+                                instanceName,
+                                oracleFlag)
+                        .build();
+                genTests.add(testCase);
+                count++;
+            }
+        }
+        return genTests;
+    }
+
+    private List<MethodSpec> generatePathTraversalTests (List<String> payloads) {
+        List<MethodSpec> genTests = new ArrayList<>();
+        for (String method : methodNames) {
+            int count = 1;
+            for (String payload : payloads) {
                 MethodSpec testCase = MethodSpec.methodBuilder(method + count)
                         .addAnnotation(Test.class)
                         .addModifiers(Modifier.PUBLIC)
@@ -79,47 +152,16 @@ public class TestBuilder {
                                 instanceName,
                                 oracleFlag)
                         .build();
-                generatedTests.add(testCase);
+                genTests.add(testCase);
                 count++;
             }
         }
-
-        //Print out all the generated tests
-        //generatedTests.forEach(System.out::println);
-
-        // Build test cases
-        TypeSpec.Builder testCaseBuilder = TypeSpec.classBuilder(testclassName)
-                .addModifiers(Modifier.PUBLIC)
-                // FOR PROGRAM TO COMPILE WILL NEED TO TAKE BRACES SURROUNDING STATEMENT OUT
-                .addInitializerBlock(CodeBlock.builder()
-                        .addStatement("private $L $L", className, instanceName)
-                        .build())
-                .addMethod(setUp);
-
-        for (MethodSpec m : generatedTests) {
-            testCaseBuilder.addMethod(m);
-        }
-
-        // Setup java file to write out to
-        JavaFile javaTestFile = JavaFile
-                .builder(packageName, testCaseBuilder.build())
-                .indent("    ") // Default indentation is 2 spaces so we set this to 4 spaces instead
-                .build();
-
-        // Write the java file out and print info
-        String FILE_PATH_OUT = packageName;
-
-        javaTestFile.writeTo(new File(FILE_PATH_OUT));
-
-        System.out.println("[SUCCESS] Java file: " + testclassName + " written out to: " + FILE_PATH_OUT);
+        return genTests;
     }
 
-    /* @Deprecated effectively, don't need to use it but will keep it just in case
-        TypeSpec junitTestSpec = TypeSpec.classBuilder(testclassName)
-                .addModifiers(Modifier.PUBLIC)
-                .addMethod(setUp)
-                .addMethod(basicTest)
-                .build();
-        */
+    private List<MethodSpec> generateIntegerTests (List<Integer> payloads) {
+
+        return null;
+    }
 
 }
