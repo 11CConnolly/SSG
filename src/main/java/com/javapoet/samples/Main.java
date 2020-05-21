@@ -12,6 +12,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
+        // Main method Builder
         MethodSpec main = MethodSpec.methodBuilder("main")
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
                 .returns(void.class)
@@ -19,11 +20,13 @@ public class Main {
                 .addStatement("$T.out.println($S)", System.class, "Hello, JavaPoet")
                 .build();
 
+        // Overall class Builder
         TypeSpec helloWorld = TypeSpec.classBuilder("HelloWorld")
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                 .addMethod(main)
                 .build();
 
+        // Build to javaFile - generate the output
         JavaFile javaFile = JavaFile.builder("com.javapoet.samples", helloWorld)
                 .build();
 

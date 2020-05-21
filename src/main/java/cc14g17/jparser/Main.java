@@ -1,6 +1,9 @@
 package cc14g17.jparser;
 
+import cc14g17.SECdefects.CWE22_Path_Traversal;
+
 import java.io.IOException;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class Main {
@@ -43,12 +46,13 @@ public class Main {
             e.printStackTrace();
         }
 
-        // Begin building the class
+        // Begin building the test class
         TestBuilder testBuilder = new TestBuilder();
+        testBuilder.readReport(classReport);
 
         try
         {
-            testBuilder.buildTest(classReport);
+            testBuilder.buildTest();
         }
         catch (IOException e)
         {
