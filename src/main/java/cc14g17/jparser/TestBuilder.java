@@ -8,6 +8,7 @@ import org.junit.Test;
 import javax.lang.model.element.Modifier;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -124,6 +125,7 @@ public class TestBuilder {
                 MethodSpec testCase = MethodSpec.methodBuilder(method + count)
                         .addAnnotation(Test.class)
                         .addModifiers(Modifier.PUBLIC)
+                        .beginControlFlow("try")
                         .addStatement("$L.$L($S,$S)",
                                 instanceName,
                                 method,
@@ -133,6 +135,9 @@ public class TestBuilder {
                                 Assert.class,
                                 instanceName,
                                 oracleFlag)
+                        .nextControlFlow("catch ($T e)", SQLException.class)
+                        .addStatement("$T.fail(\"Exception \" + e)", Assert.class)
+                        .endControlFlow()
                         .build();
                 genTests.add(testCase);
                 count++;
@@ -149,6 +154,7 @@ public class TestBuilder {
                 MethodSpec testCase = MethodSpec.methodBuilder(method + count)
                         .addAnnotation(Test.class)
                         .addModifiers(Modifier.PUBLIC)
+                        .beginControlFlow("try")
                         .addStatement("$L.$L($S)",
                                 instanceName,
                                 method,
@@ -157,6 +163,9 @@ public class TestBuilder {
                                 Assert.class,
                                 instanceName,
                                 oracleFlag)
+                        .nextControlFlow("catch ($T e)", IOException.class)
+                        .addStatement("$T.fail(\"Exception \" + e)", Assert.class)
+                        .endControlFlow()
                         .build();
                 genTests.add(testCase);
                 count++;
@@ -173,10 +182,14 @@ public class TestBuilder {
                 MethodSpec testCase = MethodSpec.methodBuilder(method + count)
                         .addAnnotation(Test.class)
                         .addModifiers(Modifier.PUBLIC)
+                        .beginControlFlow("try")
                         .addStatement("$L.$L($L)",
                                 instanceName,
                                 method,
                                 payload)
+                        .nextControlFlow("catch ($T) e", ArrayIndexOutOfBoundsException.class)
+                        .addStatement("$T.fail(\"Exception \" + e)", Assert.class)
+                        .endControlFlow()
                         .build();
                 genTests.add(testCase);
                 count++;
