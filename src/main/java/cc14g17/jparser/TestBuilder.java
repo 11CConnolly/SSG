@@ -1,7 +1,5 @@
 package cc14g17.jparser;
 
-import cc14g17.SECdefects.CWE22_Path_Traversal;
-import com.github.javaparser.ast.body.FieldDeclaration;
 import com.squareup.javapoet.*;
 import org.junit.Assert;
 import org.junit.Before;
@@ -12,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TestBuilder {
@@ -22,9 +19,12 @@ public class TestBuilder {
     private List<String> methodNames;
     private String instanceName;
     private String testclassName;
+    private String oracleFlag;
 
     // Regex pattern to match methods with bad... or good...
-    private Pattern pattern = Pattern.compile("^bad[a-zA-Z0-9_]+|^good[a-zA-Z0-9)]+");
+    private Pattern methodPatten = Pattern.compile("^bad[a-zA-Z0-9_]+|^good[a-zA-Z0-9)]+");
+    // Regex pattern to find methods starting with is... as these are our Oracle flags
+    private Pattern oraclePattern = Pattern.compile("^is[a-zA-Z0-9_]+");
 
     TestBuilder() {
 
@@ -34,13 +34,17 @@ public class TestBuilder {
         this.className = classReport.getClassName();
         this.packageName = classReport.getPackageName();
         this.instanceName = classReport.getClassName().split("_")[0].toLowerCase();
-        this.testclassName = classReport.getClassName() + "AUTOGEN__EXPLOIT_Test";
+        this.testclassName = classReport.getClassName() + "AUTOGEN_EXPLOIT_Test";
 
         List<String> relevantMethodNames = new ArrayList<>();
         for (String method : classReport.getMethodNames()) {
-            if (pattern.matcher(method).matches()) {
+            if (methodPatten.matcher(method).matches()) {
                 relevantMethodNames.add(method);
                 System.out.println("Method that matches: " + method);
+            }
+            if (oraclePattern.matcher(method).matches()) {
+                this.oracleFlag = method;
+                System.out.println("Relevant Oracle method that matches regex is: " + method);
             }
         }
         this.methodNames = relevantMethodNames;
@@ -70,9 +74,10 @@ public class TestBuilder {
                                 instanceName,
                                 method,
                                 payload + "passwords/passwd.txt")
-                        .addStatement("$T.assertFalse($L.isFileRead())",
+                        .addStatement("$T.assertFalse($L.$L())",
                                 Assert.class,
-                                instanceName) // + Oracle outputs the flag function
+                                instanceName,
+                                oracleFlag)
                         .build();
                 generatedTests.add(testCase);
                 count++;
@@ -80,7 +85,7 @@ public class TestBuilder {
         }
 
         //Print out all the generated tests
-        generatedTests.forEach(System.out::println);
+        //generatedTests.forEach(System.out::println);
 
         // Build test cases
         TypeSpec.Builder testCaseBuilder = TypeSpec.classBuilder(testclassName)
@@ -107,11 +112,6 @@ public class TestBuilder {
         javaTestFile.writeTo(new File(FILE_PATH_OUT));
 
         System.out.println("[SUCCESS] Java file: " + testclassName + " written out to: " + FILE_PATH_OUT);
-    }
-
-    private String generateNextTest() {
-
-        return "";
     }
 
     /* @Deprecated effectively, don't need to use it but will keep it just in case
