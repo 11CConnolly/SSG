@@ -173,7 +173,7 @@ public class TestBuilder {
                 MethodSpec testCase = MethodSpec.methodBuilder(method + count)
                         .addAnnotation(Test.class)
                         .addModifiers(Modifier.PUBLIC)
-                        .addStatement("$L.$L($S)",
+                        .addStatement("$L.$L($L)",
                                 instanceName,
                                 method,
                                 payload)
@@ -193,7 +193,7 @@ public class TestBuilder {
                 MethodSpec testCase = MethodSpec.methodBuilder(method + count)
                         .addAnnotation(Test.class)
                         .addModifiers(Modifier.PUBLIC)
-                        .addStatement("$L.$L($S)",
+                        .addStatement("$L.$L($L)",
                                 instanceName,
                                 method,
                                 payload)
