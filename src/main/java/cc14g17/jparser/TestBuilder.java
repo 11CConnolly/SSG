@@ -16,14 +16,15 @@ public class TestBuilder {
 
     private String className;
     private String packageName;
-    private List<String> methodNames;
+    private List<String> allMethodNames;
+    private List<String> goodbadMethodNames;
     private String instanceName;
     private String testclassName;
     private String oracleFlag = "";
 
     // Regex pattern to match methods with bad... or good...
     private Pattern methodPatten = Pattern.compile("^bad[a-zA-Z0-9_]+|^good[a-zA-Z0-9)]+");
-    // Regex pattern to find methods starting with is... as these are our Oracle flags
+    // Regex pattern to find methods starting with is... as these are our Oracle flags functions
     private Pattern oraclePattern = Pattern.compile("^is[a-zA-Z0-9_]+");
 
     TestBuilder() {
@@ -35,6 +36,7 @@ public class TestBuilder {
         this.packageName = classReport.getPackageName();
         this.instanceName = classReport.getClassName().split("_")[0].toLowerCase();
         this.testclassName = classReport.getClassName() + "AUTOGEN_EXPLOIT_Test";
+        this.allMethodNames = classReport.getMethodNames();
 
         List<String> relevantMethodNames = new ArrayList<>();
         for (String method : classReport.getMethodNames()) {
@@ -47,7 +49,7 @@ public class TestBuilder {
                 System.out.println("Relevant Oracle method that matches regex is: " + method);
             }
         }
-        this.methodNames = relevantMethodNames;
+        this.goodbadMethodNames = relevantMethodNames;
     }
 
     void buildTest(DefectType defectType) throws IOException {
@@ -75,11 +77,13 @@ public class TestBuilder {
             case INTEGER_ATTACK:
                 generatedTests = generateIntegerTests(listParser.getIntegerPayloads());
                 break;
+            case INTEGER_VALIDATION:
+                generatedTests = generateValidationTests(listParser.getIntegerPayloads());
+                break;
             default:
                 System.out.println("Improper defect Type");
                 throw new IllegalArgumentException();
         }
-
         // Check our list of generated tests and then print them out
         if (generatedTests == null) {
             System.out.println("No generated tests provided");
@@ -98,6 +102,7 @@ public class TestBuilder {
                 for (MethodSpec m : generatedTests) {
                     testCaseBuilder.addMethod(m);
                 }
+
         // Setup java file to write out to
         JavaFile javaTestFile = JavaFile
                 .builder(packageName, testCaseBuilder.build())
@@ -113,7 +118,7 @@ public class TestBuilder {
 
     private List<MethodSpec> generateSQLTests (List<String> payloads) {
         List<MethodSpec> genTests = new ArrayList<>();
-        for (String method : methodNames) {
+        for (String method : goodbadMethodNames) {
             int count = 1;
             for (String payload : payloads) {
                 MethodSpec testCase = MethodSpec.methodBuilder(method + count)
@@ -138,7 +143,7 @@ public class TestBuilder {
 
     private List<MethodSpec> generatePathTraversalTests (List<String> payloads) {
         List<MethodSpec> genTests = new ArrayList<>();
-        for (String method : methodNames) {
+        for (String method : goodbadMethodNames) {
             int count = 1;
             for (String payload : payloads) {
                 MethodSpec testCase = MethodSpec.methodBuilder(method + count)
@@ -161,9 +166,8 @@ public class TestBuilder {
     }
 
     private List<MethodSpec> generateIntegerTests (List<Integer> payloads) {
-        // WHAT'S THE ORACLE SUPPOSED TO LOOK LIKE?
         List<MethodSpec> genTests = new ArrayList<>();
-        for (String method : methodNames) {
+        for (String method : goodbadMethodNames) {
             int count = 1;
             for (Integer payload : payloads) {
                 MethodSpec testCase = MethodSpec.methodBuilder(method + count)
@@ -181,4 +185,50 @@ public class TestBuilder {
         return genTests;
     }
 
+    private List<MethodSpec> generateValidationTests (List<Integer> payloads) {
+        List<MethodSpec> genTests = new ArrayList<>();
+        for (String method : goodbadMethodNames) {
+            int count = 1;
+            for (Integer payload : payloads) {
+                MethodSpec testCase = MethodSpec.methodBuilder(method + count)
+                        .addAnnotation(Test.class)
+                        .addModifiers(Modifier.PUBLIC)
+                        .addStatement("$L.$L($S)",
+                                instanceName,
+                                method,
+                                payload)
+                        .addCode(validationOracleBlock(payload))
+                        .build();
+                genTests.add(testCase);
+                count++;
+            }
+        }
+        return genTests;
+    }
+
+    private CodeBlock validationOracleBlock(Integer payload) {
+        // Find relevant getter method
+        String oracleMethod = "";
+        for (String m : allMethodNames) {
+            if (m.startsWith("get")) {
+                oracleMethod = m;
+            }
+        }
+
+        // Get the new balance I'm expecting
+        if (payload <= 0 || payload > 200) {
+            payload = 0;
+        } else {
+            payload = -payload;
+        }
+
+        // Build oracle assertion
+        return CodeBlock.builder()
+                .addStatement("$T.assertEquals($L,$L.$L(), 0.001)",
+                        Assert.class,
+                        payload,
+                        instanceName,
+                        oracleMethod)
+                .build();
+    }
 }
