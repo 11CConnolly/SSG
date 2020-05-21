@@ -119,9 +119,10 @@ public class TestBuilder {
                 MethodSpec testCase = MethodSpec.methodBuilder(method + count)
                         .addAnnotation(Test.class)
                         .addModifiers(Modifier.PUBLIC)
-                        .addStatement("$L.$L($S)",
+                        .addStatement("$L.$L($S,$S)",
                                 instanceName,
                                 method,
+                                payload,
                                 payload)
                         .addStatement("$T.assertFalse($L.$L())",
                                 Assert.class,
@@ -160,8 +161,24 @@ public class TestBuilder {
     }
 
     private List<MethodSpec> generateIntegerTests (List<Integer> payloads) {
-
-        return null;
+        // WHAT'S THE ORACLE SUPPOSED TO LOOK LIKE?
+        List<MethodSpec> genTests = new ArrayList<>();
+        for (String method : methodNames) {
+            int count = 1;
+            for (Integer payload : payloads) {
+                MethodSpec testCase = MethodSpec.methodBuilder(method + count)
+                        .addAnnotation(Test.class)
+                        .addModifiers(Modifier.PUBLIC)
+                        .addStatement("$L.$L($S)",
+                                instanceName,
+                                method,
+                                payload)
+                        .build();
+                genTests.add(testCase);
+                count++;
+            }
+        }
+        return genTests;
     }
 
 }
