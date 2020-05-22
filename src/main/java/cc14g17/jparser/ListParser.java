@@ -6,6 +6,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Class to Parse Payload Lists from under the src/main/resources/lists and provide lists as
+ * test data for generation
+ */
 public class ListParser {
 
     private List<String> SQLPayloads;
@@ -16,13 +20,20 @@ public class ListParser {
         parseAllPayloads();
     }
 
-    // Perform all necessary parsing of files
+    /**
+     * Parse all payloads and assign to local variable
+     */
     private void parseAllPayloads() {
         SQLPayloads = parseSQLPayloads();
         pathPayloads = parsePathPayloads();
         integerPayloads = parseIntegerPayloads();
     }
 
+    /**
+     * Parses a list of common SQL Injection attacks from StringSQLIAttacks.csv to use as test data
+     *
+     * @return List of Strings - SQL Injection Payload Strings
+     */
     private List<String> parseSQLPayloads() {
         String file_path = "src\\main\\resources\\lists\\StringSQLIAttacks.csv";
         File file = new File(file_path);
@@ -48,6 +59,11 @@ public class ListParser {
         return list;
     }
 
+    /**
+     * Parses a list of common Path Traversal attacks from StringPathAttacks.csv to use as test data
+     *
+     * @return List of Strings - Path Traversal Payload Strings
+     */
     private List<String> parsePathPayloads() {
         String file_path = "src\\main\\resources\\lists\\StringPathAttacks.csv";
         File file = new File(file_path);
@@ -73,6 +89,11 @@ public class ListParser {
         return list;
     }
 
+    /**
+     * Parses a list of common integers used for attack from IntegerAttacks.csv to use as test data
+     *
+     * @return List of Integers - Integers for Integer Overflow or Attack
+     */
     private List<Integer> parseIntegerPayloads() {
         String file_path = "src\\main\\resources\\lists\\IntegerAttacks.csv";
         File file = new File(file_path);
@@ -100,25 +121,29 @@ public class ListParser {
         return list;
     }
 
-    // Main method for testing purposes
-    public static void main(String[] args) {
-        ListParser listParser = new ListParser();
-        System.out.println("[LOG] ---Get SQL Payloads---");
-        listParser.getSQLPayloads().forEach(System.out::println);
-        System.out.println("[LOG] ---Get Path Payloads---");
-        listParser.getPathTraversalPayloads().forEach(System.out::println);
-        System.out.println("[LOG] ---Get Integer Payloads---");
-        listParser.getIntegerPayloads().forEach(System.out::println);
-    }
-
+    /**
+     * Simple getter for flat list of SQL Injection strings
+     *
+     * @return List of Strings for SQL Injection
+     */
     public List<String> getSQLPayloads () {
         return SQLPayloads;
     }
 
+    /**
+     * Simple getter for flat list of Path Traversal Strings
+     *
+     * @return List of Strings for Path Traversal Attack
+     */
     public List<String> getPathTraversalPayloads() {
         return pathPayloads;
     }
 
+    /**
+     * Simple getter for flat list of Integers for an Integer attack
+     *
+     * @return List of Integers for integer attack
+     */
     public List<Integer> getIntegerPayloads() {
         return integerPayloads;
     }
