@@ -120,11 +120,13 @@ public class TestBuilder {
                 System.out.println("Improper defect Type");
                 throw new IllegalArgumentException();
         }
-        generatedTests.forEach(System.out::println);
+        System.out.println("Number of generated tests: " + generatedTests.size());
 
 
         /* Build test suite class and add our relevant methods */
         TypeSpec.Builder testCaseBuilder = TypeSpec.classBuilder(testSuiteName)
+                .addJavadoc("AUTOMATICALLY GENERATED TEST SUITE\n"
+                            + "@author cc14g17")
                 .addModifiers(Modifier.PUBLIC)
                 .addInitializerBlock(CodeBlock.builder()
                         .addStatement("private $L $L", className, instanceName)
