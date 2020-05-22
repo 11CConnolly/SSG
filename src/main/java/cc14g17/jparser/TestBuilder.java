@@ -120,7 +120,7 @@ public class TestBuilder {
                 System.out.println("Improper defect Type");
                 throw new IllegalArgumentException();
         }
-        generatedTests.forEach(System.out::println);
+        System.out.println("Number of generated tests: " + generatedTests.size());
 
 
         /* Build test suite class and add our relevant methods */
