@@ -3,7 +3,7 @@
 Generator for use with SECdefects
 
 ## Instructions
-To build, use `mvn clean package`
+To build, use `mvn clean package -DskipTests=true`
 To run, use `java -jar target/jparser-0.1.0-SNAPSHOT.jar <file location>.java`
 
 ## Acknowledgementts
