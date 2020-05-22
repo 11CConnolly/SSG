@@ -14,16 +14,22 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Analyzes the AST of a given .java file using the JavaParser and relevant ethods
+ */
 public class ClassAnalyzer {
 
     ClassAnalyzer () {
     }
 
+    /**
+     * Parse and analyze the AST of a .java source code file
+     *
+     * @param file_path Input file that can either be relative or absolute
+     * @return ClassReport of relevant information
+     * @throws IOException Can be thrown as we are parsing the file
+     */
     ClassReport analyseClass (String file_path) throws IOException {
-
-        // FilePath can be in following format
-        // "src/main/java/cc14g17/SECdefects/CWE20_Improper_Input_Validation.java"
-        // or as an Absolute reference
 
         // Parse root node of java file
         CompilationUnit cu = StaticJavaParser.parse(new File(file_path));
@@ -48,6 +54,7 @@ public class ClassAnalyzer {
                 methodNames
         );
 
+        // Write out logging information
         System.out.println("[INFO] Writing output from classReport");
         System.out.println(classReport.toString());
         System.out.println("[INFO] Finished output from classReport");
@@ -55,7 +62,10 @@ public class ClassAnalyzer {
         return classReport;
     }
 
-    private class PackageNameGetter extends GenericVisitorAdapter<String, Void> {
+    /**
+     * Returns the package name after visiting the required nodes from the root
+     */
+    private static class PackageNameGetter extends GenericVisitorAdapter<String, Void> {
 
         @Override
         public String visit(PackageDeclaration pd, Void arg) {
@@ -64,7 +74,10 @@ public class ClassAnalyzer {
         }
     }
 
-    private class ClassNameGetter extends GenericVisitorAdapter<String, Void> {
+    /**
+     * Returns the class name after visiting the required nodes from the root
+     */
+    private static class ClassNameGetter extends GenericVisitorAdapter<String, Void> {
 
         @Override
         public String visit(ClassOrInterfaceDeclaration cd, Void arg) {
@@ -73,7 +86,10 @@ public class ClassAnalyzer {
         }
     }
 
-    private class MethodNameCollector extends VoidVisitorAdapter<List<String>> {
+    /**
+     * Returns a list of all methods in the class visiting nodes from the root
+     */
+    private static class MethodNameCollector extends VoidVisitorAdapter<List<String>> {
 
         @Override
         public void visit(MethodDeclaration md, List<String> collector) {
