@@ -125,6 +125,8 @@ public class TestBuilder {
 
         /* Build test suite class and add our relevant methods */
         TypeSpec.Builder testCaseBuilder = TypeSpec.classBuilder(testSuiteName)
+                .addJavadoc("AUTOMATICALLY GENERATED TEST SUITE\n"
+                            + "@author cc14g17")
                 .addModifiers(Modifier.PUBLIC)
                 .addInitializerBlock(CodeBlock.builder()
                         .addStatement("private $L $L", className, instanceName)
