@@ -12,6 +12,7 @@
 package cc14g17.SECdefects;
 
 import java.io.*;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
 public class CWE22_Path_Traversal extends AbstractDefectiveProgram {
@@ -43,6 +44,14 @@ public class CWE22_Path_Traversal extends AbstractDefectiveProgram {
     public void badRead(String inputFilepath) {
 
         String relativeFilepath = "./src/main/resources/profiles/" + inputFilepath;
+
+        // Perform Double URL decoding
+        try {
+            relativeFilepath = URLDecoder.decode(
+                    URLDecoder.decode(relativeFilepath, StandardCharsets.UTF_8.name()), StandardCharsets.UTF_8.name());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         File file = new File(relativeFilepath);
 
@@ -84,6 +93,14 @@ public class CWE22_Path_Traversal extends AbstractDefectiveProgram {
     public void goodRead(String inputFilepath) {
 
         String relativeFilepath = "src/main/resources/profiles/" + inputFilepath;
+
+        // Perform Double URL decoding
+        try {
+            relativeFilepath = URLDecoder.decode(
+                    URLDecoder.decode(relativeFilepath, StandardCharsets.UTF_8.name()), StandardCharsets.UTF_8.name());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         File file = new File(relativeFilepath);
 
