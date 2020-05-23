@@ -4,7 +4,26 @@ Generator for use with SECdefects
 
 ## Instructions
 To build, use `mvn clean package -DskipTests=true`
-To run, use `java -jar target/jparser-0.1.0-SNAPSHOT.jar <file location>.java`
+
+Once that has been done, you can then run the jar file to build for the files you want.
+
+To run, use `java -jar target/jparser-0.1.0-SNAPSHOT.jar <file location>.java <defect type>`
+
+#### Example Usage
+
+Two example files have been included for demonstrative: ExampleInteger.java and ExampleString.java.
+
+To run SSG on ExampleInteger.java you can use:
+
+`java -jar target/jparser-0.1.0-SNAPSHOT.jar src\main\java\com\example\ExampleInteger.java INTEGER_ATTACK`
+
+To run SSG on ExampleString.java generating SQL Injection tests
+
+`java -jar target/jparser-0.1.0-SNAPSHOT.jar src\main\java\com\example\ExampleInteger.java STRING_SQL_INJECTION`
+
+To run SSG on ExampleString.java generating Path Traversal attack tests
+
+`java -jar target/jparser-0.1.0-SNAPSHOT.jar src\main\java\com\example\ExampleInteger.java STRING_PATH_TRAVERSAL`
 
 ## Acknowledgementts
-Project utlizes JavaParser and JavaPoet
+Project utlizes JavaParser and JavaPoet. Fuzzing lists used are adapted from 1N3@Crowshields lists.
