@@ -126,6 +126,7 @@ public class TestBuilder {
         /* Build test suite class and add our relevant methods */
         TypeSpec.Builder testCaseBuilder = TypeSpec.classBuilder(testSuiteName)
                 .addJavadoc("AUTOMATICALLY GENERATED TEST SUITE\n"
+                            + "NOTE: TO COMPILE CORRECTLY PLEASE REMOVE { } AROUND INITIALIZATION FIELD AT TOP\n"
                             + "@author cc14g17")
                 .addModifiers(Modifier.PUBLIC)
                 .addInitializerBlock(CodeBlock.builder()
