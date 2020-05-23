@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Analyzes the AST of a given .java file using the JavaParser and relevant ethods
+ * Analyzes the AST of a given .java file using the JavaParser and relevant methods
  */
 public class ClassAnalyzer {
 

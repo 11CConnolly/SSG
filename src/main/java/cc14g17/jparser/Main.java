@@ -21,7 +21,7 @@ public class Main {
     /**
      * Main method to take input from command line i.e. .java file and DefectType choice. Provides help with -h.
      *
-     * @param args
+     * @param args input from the user
      */
     public static void main(String[] args) {
         // Show defect types including string
