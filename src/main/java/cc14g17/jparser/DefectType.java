@@ -5,12 +5,7 @@ package cc14g17.jparser;
  *  Parameter is included at the start of the name to indicate which parameter
  *  the associated good/bad methods should take.
  *
- *  Further explanation on defect types in included below with examples has been included below:
- *  <li>{@link #INTEGER_ATTACK}</li>
- *  <li>{@link #INTEGER_VALIDATION}</li>
- *  <li>{@link #STRING_PATH_TRAVERSAL}</li>
- *  <li>{@link #STRING_SQL_INJECTION}</li>
- *  <li>{@link #STRING_SQL_INJECTIONS}</li>
+ *  Further explanation on defect types in included with each example
  */
 public enum DefectType {
 
