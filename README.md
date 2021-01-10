@@ -1,6 +1,6 @@
 # Security Suite Generator
 
-Generator for use with SECdefects
+Automatic Test Suite Generator used to investigate Automatic Software Repair of Security Vulnerabilities in SECDefects. This was presented as the third year dissertation for my BSc Computer Science at the University of Southampton and recieved First Class honors.
 
 ## Instructions
 To build, use `mvn clean package -DskipTests=true`
