@@ -25,5 +25,5 @@ To run SSG on ExampleString.java generating Path Traversal attack tests
 
 `java -jar target/jparser-0.1.0-SNAPSHOT.jar src\main\java\com\example\ExampleInteger.java STRING_PATH_TRAVERSAL`
 
-## Acknowledgementts
+## Acknowledgements
 Project utlizes JavaParser and JavaPoet. Fuzzing lists used are adapted from 1N3@Crowshields lists.
