@@ -2,6 +2,8 @@
 
 Automatic Test Suite Generator used to investigate Automatic Software Repair of Security Vulnerabilities in SECDefects. This was presented as the third year dissertation for my BSc Computer Science at the University of Southampton and recieved First Class honors.
 
+View Report.pdf for final dissertation report.
+
 ## Instructions
 To build, use `mvn clean package -DskipTests=true`
 
